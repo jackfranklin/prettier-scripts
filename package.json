@@ -1,0 +1,17 @@
+{
+  "name": "prettier-scripts",
+  "version": "0.1.0",
+  "description": "Scripts to help move/maintain your code on Prettier.",
+  "main": "index.js",
+  "author": "Jack Franklin",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "2.0.1",
+    "glob": "7.1.2",
+    "shelljs": "0.7.8",
+    "yargs": "8.0.2"
+  },
+  "devDependencies": {
+    "prettier": "1.5.2"
+  }
+}
