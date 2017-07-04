@@ -8,7 +8,6 @@ const checkDependencyInstalledLocally = name => {
   return exists
 }
 
-
 module.exports = {
   checkDependencyInstalledLocally,
 }

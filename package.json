@@ -12,6 +12,11 @@
     "yargs": "8.0.2"
   },
   "devDependencies": {
-    "prettier": "1.5.2"
+    "prettier": "1.5.2",
+    "jest": "20.0.4"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupTestFrameworkScriptFile": "./test-setup.js"
   }
 }
