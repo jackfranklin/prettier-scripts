@@ -19,6 +19,19 @@ const processCommandLineArguments = () => {
 
 const checkPrettierCLI = args => {
   const prettierExists = checkDependencyInstalledLocally('prettier')
+
+  const nonPrettierArgs = ['use-prettier-eslint', 'targets']
+
+  const argsToPassToPrettier = Object.keys(args)
+    .filter(arg => {
+      return nonPrettierArgs.indexOf(arg) === -1
+    })
+    .map(arg => {
+      const value = args[arg]
+      return value === true ? `--${arg}` : `--${arg} ${value}`
+    })
+    .join(' ')
+
   const { execShellCommand } = require('../util')
 
   if (!prettierExists) {
@@ -35,10 +48,9 @@ const checkPrettierCLI = args => {
   const execPath = `./node_modules/.bin/prettier`
   const command = [
     execPath,
-    '--no-semi',
-    '--single-quote',
-    '--trailing-comma es5',
-    'src',
+    argsToPassToPrettier,
+    '--list-different',
+    args.targets,
   ].join(' ')
   const prettierOutput = execShellCommand(command)
 }

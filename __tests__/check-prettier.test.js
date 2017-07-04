@@ -1,6 +1,11 @@
 const chalk = require('chalk')
 
 const mockCore = obj => jest.mock('../index', () => obj)
+const util = require('../util')
+
+beforeEach(() => {
+  util.execShellCommand = jest.fn()
+})
 
 test('check-prettier output when prettier and prettier-eslint is not available', () => {
   mockCore({
@@ -26,11 +31,6 @@ test('it calls Prettier with all the right arguments', () => {
     checkDependencyInstalledLocally: () => true,
   })
 
-  jest.mock('../util', () => ({
-    execShellCommand: jest.fn(),
-  }))
-
-  const { execShellCommand } = require('../util')
   const { checkPrettierCLI } = require('../bin/check-prettier')
 
   checkPrettierCLI({
@@ -40,7 +40,7 @@ test('it calls Prettier with all the right arguments', () => {
     targets: 'src',
   })
 
-  expect(execShellCommand).toHaveBeenCalledWith(
-    `./node_modules/.bin/prettier --no-semi --single-quote --trailing-comma es5 src`
+  expect(util.execShellCommand).toHaveBeenCalledWith(
+    `./node_modules/.bin/prettier --no-semi --single-quote --trailing-comma es5 --list-different src`
   )
 })
