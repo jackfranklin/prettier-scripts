@@ -12,7 +12,7 @@
     "yargs": "8.0.2"
   },
   "bin": {
-    "check-prettier-changed": "./bin/check-prettier.js"
+    "prettier-scripts": "./bin/prettier-scripts.js"
   },
   "devDependencies": {
     "prettier": "1.5.2",
