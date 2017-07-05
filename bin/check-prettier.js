@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 const isCLI = require.main === module
+const shell = require('shelljs')
 
 const { argv } = require('yargs')
 
@@ -20,7 +21,11 @@ const processCommandLineArguments = () => {
 const checkPrettierCLI = args => {
   const prettierExists = checkDependencyInstalledLocally('prettier')
 
-  const nonPrettierArgs = ['use-prettier-eslint', 'targets']
+  const nonPrettierArgs = [
+    'use-prettier-eslint',
+    'targets',
+    'usePrettierEslint',
+  ]
 
   const argsToPassToPrettier = Object.keys(args)
     .filter(arg => {
@@ -46,16 +51,32 @@ const checkPrettierCLI = args => {
   }
 
   const execPath = `./node_modules/.bin/prettier`
+  const files = shell.exec('git diff HEAD --name-only', {
+    silent: true,
+  })
+
+  const fileNames = files.stdout
+    .split('\n')
+    .filter(f => {
+      return f.indexOf('.js') > -1
+    })
+    .join(' ')
+  console.log('got files', fileNames)
   const command = [
     execPath,
     argsToPassToPrettier,
     '--list-different',
-    args.targets,
+    fileNames,
   ].join(' ')
+  console.log('got command', command)
   const prettierOutput = execShellCommand(command)
+  console.log('got prettier output', prettierOutput)
 }
 
 if (isCLI) {
+  const args = processCommandLineArguments()
+  console.log('got args', args)
+  checkPrettierCLI(args)
 }
 
 module.exports = {

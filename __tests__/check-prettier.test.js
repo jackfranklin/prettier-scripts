@@ -37,10 +37,9 @@ test('it calls Prettier with all the right arguments', () => {
     'no-semi': true,
     'single-quote': true,
     'trailing-comma': 'es5',
-    targets: 'src',
   })
 
   expect(util.execShellCommand).toHaveBeenCalledWith(
-    `./node_modules/.bin/prettier --no-semi --single-quote --trailing-comma es5 --list-different src`
+    `./node_modules/.bin/prettier --no-semi --single-quote --trailing-comma es5 --list-different`
   )
 })
