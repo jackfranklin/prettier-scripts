@@ -1,11 +1,10 @@
 const path = require('path')
 const fs = require('fs')
 
+const npmWhich = require('npm-which')(process.cwd())
+
 const checkDependencyInstalledLocally = name => {
-  const cwd = process.cwd()
-  const executablePath = path.join(cwd, 'node_modules', '.bin', name)
-  const exists = fs.existsSync(executablePath)
-  return exists
+  return npmWhich.sync(name)
 }
 
 module.exports = {

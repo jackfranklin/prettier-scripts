@@ -1,31 +1,40 @@
 #!/usr/bin/env node
 
-const isCLI = require.main === module
 const shell = require('shelljs')
 
 const { argv } = require('yargs')
+const chalk = require('chalk')
 
-const { error } = require('../log')
+const { error, debug, trace, info } = require('../log')
 const { checkDependencyInstalledLocally } = require('../index')
+const npmWhich = require('npm-which')(process.cwd())
 
 const processCommandLineArguments = () => {
   const { argv } = require('yargs')
-  console.log('got argv', argv)
   const usePrettierEslint = argv['prettier-eslint'] === true
-  const check = argv.check === true
   const changed = argv.changed === true
 
-  return {
+  const prettierArgsToPassThrough = [
+    'trailing-comma',
+    'single-quote',
+    'double-quote',
+    'print-width',
+    'no-bracket-spacing',
+    'jsx-bracket-same-line',
+    'use-tabs',
+    'tab-width',
+    'parser',
+  ]
+
+  const parsedArgs = {
     usePrettierEslint,
-    check,
     changed,
-    targets: argv._,
-    'trailing-comma': argv['trailing-comma'],
-    [argv.semi ? 'semi' : 'no-semi']: true,
-    'single-quote': argv['single-quote'],
-    'double-quote': argv['double-quote'],
-    write: argv.write,
+    targets: argv.targets,
+    [argv.semi === false ? 'no-semi' : 'semi']: true,
   }
+  prettierArgsToPassThrough.forEach(a => (parsedArgs[a] = argv[a]))
+
+  return parsedArgs
 }
 
 const checkPrettierCLI = args => {
@@ -34,7 +43,6 @@ const checkPrettierCLI = args => {
   const nonPrettierArgs = [
     'use-prettier-eslint',
     'usePrettierEslint',
-    'check',
     'changed',
     'targets',
   ]
@@ -66,13 +74,6 @@ const checkPrettierCLI = args => {
     process.exit(1)
   }
 
-  if (args.check && args.write) {
-    error(
-      'You passed both --check and --write which is not valid. You may only pass one.'
-    )
-    process.exit(1)
-  }
-
   if (args.changed && args.targets.length > 0) {
     error(
       'You passed --changed and a list of files. You may only pass one or the other.'
@@ -80,48 +81,60 @@ const checkPrettierCLI = args => {
     process.exit(1)
   }
 
-  const execPath = args.usePrettierEslint
-    ? `./node_modules/.bin/prettier-eslint`
-    : `./node_modules/.bin/prettier`
+  const execPath = npmWhich.sync(
+    args.usePrettierEslint ? 'prettier-eslint' : 'prettier'
+  )
 
-  const files = shell.exec('git diff HEAD --name-only', {
+  trace('Running', `git diff HEAD --name-only`, 'to find changed files')
+  const changedGitFiles = shell.exec('git diff HEAD --name-only', {
     silent: true,
   })
 
-  const changedGitFileNames = files.stdout
-    .split('\n')
-    .filter(f => {
-      return f.indexOf('.js') > -1
-    })
-    .join(' ')
+  const changedGitFileNames = changedGitFiles.stdout
+
+  if (args.changed) {
+    if (changedGitFileNames.length === 0) {
+      error('No files were found to be changed, aborting.')
+      process.exit(1)
+    }
+  }
 
   const command = [
     execPath,
     argsToPassToPrettier,
-    args.check ? '--list-different' : null,
+    '--list-different',
     args.changed ? changedGitFileNames : `'${args.targets}'`,
-  ]
-    .filter(x => x !== null)
-    .join(' ')
+  ].join(' ')
 
-  console.log('got command', command)
+  if (args.changed === true) {
+    info(
+      'Running Prettier against changed files:',
+      chalk.blue(changedGitFileNames)
+    )
+  } else {
+    info(
+      'Running Prettier against the given targets:',
+      chalk.blue(args.targets)
+    )
+  }
+
+  debug(`Executing: ${command}`)
 
   const prettierOutput = execShellCommand(command)
-  console.log('all output', prettierOutput)
   const { code, stdout } = prettierOutput
 
   if (code !== 0) {
-    error('Files were found that did not pass')
+    error('Files were found that did not pass.')
     stdout.split('\n').filter(x => x).forEach(f => console.log(`- ${f}`))
+  } else {
+    info('Prettier check passed successfully.')
+    process.exit(0)
   }
 }
 
-if (isCLI) {
+const run = () => {
   const args = processCommandLineArguments()
-  console.log('got args', args)
   checkPrettierCLI(args)
 }
 
-module.exports = {
-  checkPrettierCLI,
-}
+run()
