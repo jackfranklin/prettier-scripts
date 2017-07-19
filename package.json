@@ -2,7 +2,6 @@
   "name": "prettier-scripts",
   "version": "0.1.0",
   "description": "Scripts to help move/maintain your code on Prettier.",
-  "main": "index.js",
   "author": "Jack Franklin",
   "license": "MIT",
   "dependencies": {
@@ -29,7 +28,8 @@
   },
   "scripts": {
     "lint": "eslint src bin .",
-    "test": "npm run lint && jest",
-    "test-watch": "jest --watch"
+    "test": "npm run prettier:check:all && npm run lint && jest",
+    "test-watch": "jest --watch",
+    "prettier:check:all": "node bin/check.js --targets '{src,bin}/*.js' --no-semi --single-quote --trailing-comma es5"
   }
 }
