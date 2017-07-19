@@ -1,6 +1,6 @@
 {
   "name": "prettier-scripts",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Scripts to help move/maintain your code on Prettier.",
   "author": "Jack Franklin",
   "license": "MIT",
