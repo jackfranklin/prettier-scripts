@@ -7,6 +7,8 @@ const { error, trace } = require('./log')
 const { preparePrettierCliArguments } = require('./parse-arguments')
 const { invariant } = require('./invariant')
 
+const minimatch = require('minimatch')
+
 const { execShellCommand } = require('./util')
 
 exports.prepareCommand = args => {
@@ -24,8 +26,11 @@ exports.prepareCommand = args => {
       'Could not find prettier-eslint as a local dependency.'
     )
 
-  const hasPassedBothChangedAndTargets =
-    args.changed === true && args.targets && args.targets.length > 0
+  const hasPassedBothChangedAndTargets = !!(
+    args.changed === true &&
+    args.targets &&
+    args.targets.length > 0
+  )
 
   invariant(
     hasPassedBothChangedAndTargets === false,
@@ -39,7 +44,14 @@ exports.prepareCommand = args => {
   trace('Running', `git diff HEAD --name-only`, 'to find changed files')
   const changedGitFiles = execShellCommand('git diff HEAD --name-only')
 
-  const changedGitFileNames = changedGitFiles.stdout
+  let changedGitFileNames = changedGitFiles.stdout
+
+  if (args.filterChanged) {
+    changedGitFileNames = changedGitFileNames
+      .split(' ')
+      .filter(file => minimatch(file, args.filterChanged))
+      .join(' ')
+  }
 
   if (args.changed) {
     if (changedGitFileNames.length === 0) {

@@ -41,7 +41,12 @@ exports.processCommandLineArguments = argv => {
 }
 
 exports.preparePrettierCliArguments = args => {
-  const nonPrettierArgs = ['usePrettierEslint', 'changed', 'targets']
+  const nonPrettierArgs = [
+    'usePrettierEslint',
+    'changed',
+    'targets',
+    'filterChanged',
+  ]
 
   const argsToPassToPrettier = Object.keys(args)
     .filter(arg => {

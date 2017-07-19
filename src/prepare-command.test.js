@@ -147,5 +147,27 @@ describe('prepareCommand', () => {
 
       expect(changedGitFileNames).toEqual('foo.js bar.js')
     })
+
+    test('it can be passed a filter-changed argument to filter files', () => {
+      jest.spyOn(utilsModule, 'execShellCommand').mockImplementation(() => ({
+        stdout: 'bar/foo.js bar.css baz.jsx',
+        code: 0,
+      }))
+
+      const {
+        command,
+        changedGitFileNames,
+      } = require('./prepare-command').prepareCommand({
+        changed: true,
+        targets: '',
+        filterChanged: '**/*.{js,jsx}',
+      })
+
+      expect(command).toEqual(
+        'node_modules/.bin/prettier --list-different bar/foo.js baz.jsx'
+      )
+
+      expect(changedGitFileNames).toEqual('bar/foo.js baz.jsx')
+    })
   })
 })
