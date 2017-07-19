@@ -19,9 +19,46 @@ exports.processCommandLineArguments = argv => {
     usePrettierEslint,
     changed,
     targets: argv.targets,
-    [argv.semi === false ? 'no-semi' : 'semi']: true,
   }
+
+  // yargs turns --no-semi into semi: false
+  if (argv.hasOwnProperty('semi')) {
+    parsedArgs.semi = argv.semi
+  }
+
   prettierArgsToPassThrough.forEach(a => (parsedArgs[a] = argv[a]))
 
-  return parsedArgs
+  const argsWithUndefinedRemoved = Object.keys(
+    parsedArgs
+  ).reduce((finalArgs, argKey) => {
+    if (parsedArgs[argKey] != undefined) {
+      finalArgs[argKey] = parsedArgs[argKey]
+    }
+    return finalArgs
+  }, {})
+
+  return argsWithUndefinedRemoved
+}
+
+exports.preparePrettierCliArguments = args => {
+  const nonPrettierArgs = ['usePrettierEslint', 'changed', 'targets']
+
+  const argsToPassToPrettier = Object.keys(args)
+    .filter(arg => {
+      return nonPrettierArgs.indexOf(arg) === -1
+    })
+    .map(arg => {
+      const value = args[arg]
+      if (value == undefined) return null
+      if (value === false) {
+        return `--no-${arg}`
+      }
+
+      return value === true ? `--${arg}` : `--${arg} ${value}`
+    })
+    .filter(x => x !== null)
+    .join(' ')
+    .trim()
+
+  return argsToPassToPrettier
 }

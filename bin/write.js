@@ -5,111 +5,29 @@ const shell = require('shelljs')
 const { argv } = require('yargs')
 const chalk = require('chalk')
 
-const { error, debug, trace, info } = require('../log')
-const { checkDependencyInstalledLocally, getExecutable } = require('../index')
+const {
+  checkDependencyInstalledLocally,
+  getExecutable,
+} = require('../src/executables')
+const { error, debug, trace, info } = require('../src/log')
 const { processCommandLineArguments } = require('../src/parse-arguments')
+const { prepareCommand } = require('../src/prepare-command')
 
-const writePrettierCLI = args => {
-  const prettierExists = checkDependencyInstalledLocally('prettier')
-
-  const nonPrettierArgs = [
-    'use-prettier-eslint',
-    'usePrettierEslint',
-    'changed',
-    'targets',
-  ]
-
-  const argsToPassToPrettier = Object.keys(args)
-    .filter(arg => {
-      return nonPrettierArgs.indexOf(arg) === -1
-    })
-    .map(arg => {
-      const value = args[arg]
-      if (value == undefined) return null
-      return value === true ? `--${arg}` : `--${arg} ${value}`
-    })
-    .filter(x => x !== null)
-    .join(' ')
-
-  const { execShellCommand } = require('../util')
-
-  if (!prettierExists) {
-    error('Could not find prettier as a local dependency')
-    process.exit(1)
-  }
-
-  if (
-    args.usePrettierEslint &&
-    !checkDependencyInstalledLocally('prettier-eslint')
-  ) {
-    error('Could not find prettier-eslint as a local dependency')
-    process.exit(1)
-  }
-
-  if (args.changed && args.targets.length > 0) {
-    error(
-      'You passed --changed and a list of files. You may only pass one or the other.'
-    )
-    process.exit(1)
-  }
-
-  const execPath = getExecutable(
-    args.usePrettierEslint ? 'prettier-eslint' : 'prettier'
-  )
-
-  trace('Running', `git diff HEAD --name-only`, 'to find changed files')
-  const changedGitFiles = shell.exec('git diff HEAD --name-only', {
-    silent: true,
-  })
-
-  const changedGitFileNames = changedGitFiles.stdout
-
-  if (args.changed) {
-    if (changedGitFileNames.length === 0) {
-      error('No files were found to be changed, aborting.')
-      process.exit(1)
-    }
-  }
-
-  const command = [
-    execPath,
-    argsToPassToPrettier,
-    '--write',
-    args.changed ? changedGitFileNames : `'${args.targets}'`,
-  ].join(' ')
-
-  if (args.changed === true) {
-    info(
-      'Running Prettier against changed files:',
-      chalk.blue(changedGitFileNames)
-    )
-  } else {
-    info(
-      'Running Prettier against the given targets:',
-      chalk.blue(args.targets)
-    )
-  }
-
-  debug(`Executing: ${command}`)
-
-  const prettierOutput = execShellCommand(command)
-  const { code, stdout } = prettierOutput
-
-  info('Prettier has checked and formatted the following files for you:')
-
-  stdout
-    .split('\n')
-    .map(x => x.split('\u001b[2K\u001b[1G')[1])
-    .filter(x => !!x)
-    .forEach(x => info(`- ${x}`))
-
-  process.exit(0)
-}
+const { execShellCommand } = require('../src/util')
+const { outputRunningInfo, displayWriteOutput } = require('../src/output')
 
 const run = () => {
   const { argv } = require('yargs')
   const args = processCommandLineArguments(argv)
-  writePrettierCLI(args)
+  const { command, changedGitFileNames } = prepareCommand(
+    Object.assign({}, args, { write: true })
+  )
+
+  outputRunningInfo({ args, changedGitFileNames, command })
+
+  const prettierOutput = execShellCommand(command)
+  displayWriteOutput(prettierOutput)
+  process.exit(0)
 }
 
 run()
