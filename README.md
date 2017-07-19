@@ -21,7 +21,7 @@ $ npm install --dev prettier-scripts
 
 __IMPORTANT__: prettier-scripts _does not_ install `prettier` or `prettier-eslint` for you. Your project must have those installed already.
 
-## Scripts
+## Scripts
 
 prettier-scripts provides two executables currently, one to check your code base and one to format files:
 
