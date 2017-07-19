@@ -22,7 +22,6 @@
     "prettier": "1.5.2"
   },
   "jest": {
-    "testEnvironment": "node",
-    "setupTestFrameworkScriptFile": "./test-setup.js"
+    "testEnvironment": "node"
   }
 }

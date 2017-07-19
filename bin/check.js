@@ -6,36 +6,12 @@ const { argv } = require('yargs')
 const chalk = require('chalk')
 
 const { error, debug, trace, info } = require('../log')
-const { checkDependencyInstalledLocally } = require('../index')
-const npmWhich = require('npm-which')(process.cwd())
+const {
+  checkDependencyInstalledLocally,
+  getExecutable,
+} = require('../index')
 
-const processCommandLineArguments = () => {
-  const { argv } = require('yargs')
-  const usePrettierEslint = argv['prettier-eslint'] === true
-  const changed = argv.changed === true
-
-  const prettierArgsToPassThrough = [
-    'trailing-comma',
-    'single-quote',
-    'double-quote',
-    'print-width',
-    'no-bracket-spacing',
-    'jsx-bracket-same-line',
-    'use-tabs',
-    'tab-width',
-    'parser',
-  ]
-
-  const parsedArgs = {
-    usePrettierEslint,
-    changed,
-    targets: argv.targets,
-    [argv.semi === false ? 'no-semi' : 'semi']: true,
-  }
-  prettierArgsToPassThrough.forEach(a => (parsedArgs[a] = argv[a]))
-
-  return parsedArgs
-}
+const { processCommandLineArguments } = require('../src/parse-arguments')
 
 const checkPrettierCLI = args => {
   const prettierExists = checkDependencyInstalledLocally('prettier')
@@ -81,7 +57,7 @@ const checkPrettierCLI = args => {
     process.exit(1)
   }
 
-  const execPath = npmWhich.sync(
+  const execPath = getExecutable(
     args.usePrettierEslint ? 'prettier-eslint' : 'prettier'
   )
 
@@ -125,7 +101,7 @@ const checkPrettierCLI = args => {
 
   if (code !== 0) {
     error('Files were found that did not pass.')
-    stdout.split('\n').filter(x => x).forEach(f => console.log(`- ${f}`))
+    stdout.split('\n').filter(x => x).forEach(f => error(`- ${f}`))
   } else {
     info('Prettier check passed successfully.')
     process.exit(0)
@@ -133,7 +109,8 @@ const checkPrettierCLI = args => {
 }
 
 const run = () => {
-  const args = processCommandLineArguments()
+  const { argv } = require('yargs')
+  const args = processCommandLineArguments(argv)
   checkPrettierCLI(args)
 }
 
