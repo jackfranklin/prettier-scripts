@@ -24,8 +24,11 @@ exports.prepareCommand = args => {
       'Could not find prettier-eslint as a local dependency.'
     )
 
+  const hasPassedBothChangedAndTargets =
+    args.changed === true && args.targets && args.targets.length > 0
+
   invariant(
-    (args.changed === true && args.targets.length > 0) === false,
+    hasPassedBothChangedAndTargets === false,
     'You passed --changed and a list of files. You may only pass one or the other.'
   )
 
