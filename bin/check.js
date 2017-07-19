@@ -1,16 +1,5 @@
 #!/usr/bin/env node
 
-const shell = require('shelljs')
-
-const { argv } = require('yargs')
-const chalk = require('chalk')
-
-const { error, debug, trace, info } = require('../src/log')
-const {
-  checkDependencyInstalledLocally,
-  getExecutable,
-} = require('../src/executables')
-
 const { outputRunningInfo, displayCheckOutput } = require('../src/output')
 
 const { processCommandLineArguments } = require('../src/parse-arguments')

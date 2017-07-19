@@ -19,7 +19,6 @@ const {
   displayWriteOutput,
 } = require('./output')
 const logger = require('./log')
-const chalk = require('chalk')
 
 describe('outputRunningInfo', () => {
   it('outputs the information on what is being run', () => {

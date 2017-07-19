@@ -3,9 +3,7 @@ const {
   getExecutable,
 } = require('./executables')
 
-const chalk = require('chalk')
-
-const { error, debug, trace, info } = require('./log')
+const { error, trace } = require('./log')
 const { preparePrettierCliArguments } = require('./parse-arguments')
 const { invariant } = require('./invariant')
 

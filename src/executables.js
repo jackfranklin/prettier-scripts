@@ -1,6 +1,3 @@
-const path = require('path')
-const fs = require('fs')
-
 const npmWhich = require('npm-which')(process.cwd())
 
 const checkDependencyInstalledLocally = name => {
