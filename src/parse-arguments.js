@@ -19,6 +19,7 @@ exports.processCommandLineArguments = argv => {
     usePrettierEslint,
     changed,
     targets: argv.targets,
+    filterChanged: argv.filterChanged,
   }
 
   // yargs turns --no-semi into semi: false
