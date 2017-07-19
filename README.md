@@ -1,5 +1,7 @@
 # prettier-scripts
 
+![](https://api.travis-ci.org/jackfranklin/prettier-scripts.svg?branch=master)
+
 ```
 $ yarn add --dev prettier-scripts
 ```
