@@ -52,7 +52,7 @@ If you only wanted to check the files, you can swap `prettier-scripts-write` for
 There are also some additional flags that prettier-scripts uses:
 
 - `--prettier-eslint`: Uses [prettier-eslint-cli](https://github.com/prettier/prettier-eslint-cli), rather than Prettier directly.
-- `--filter-changed`: When you are using `--changed`, you can also pass `--filter-changed` to filter which changed files are passed through. For example, you would pass `--filter-changed '*.js'` to filter the changed files to just JavaScript.
+- `--filter-changed`: When you are using `--changed`, you can also pass `--filter-changed` to filter which changed files are passed through. For example, you would pass `--filter-changed '**/*.js'` to filter the changed files to just JavaScript.
 
 ### Log Level
 
