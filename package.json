@@ -12,6 +12,11 @@
     "shelljs": "0.7.8",
     "yargs": "8.0.2"
   },
+  "files": [
+    "src",
+    "bin",
+    "README.md"
+  ],
   "bin": {
     "prettier-scripts-check": "./bin/check.js",
     "prettier-scripts-write": "./bin/write.js"

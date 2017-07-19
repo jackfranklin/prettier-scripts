@@ -6,6 +6,8 @@ $ yarn add --dev prettier-scripts
 
 prettier-scripts is a collection of command line executables that makes adopting Prettier into your code base a little bit easier.
 
+![](docs/example.png)
+
 ## Installation
 
 ```
