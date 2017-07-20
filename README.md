@@ -23,6 +23,45 @@ $ npm install --dev prettier-scripts
 
 __IMPORTANT__: prettier-scripts _does not_ install `prettier` or `prettier-eslint` for you. Your project must have those installed already.
 
+## Examples
+
+Before we get into the nitty gritty of the documentation, here's some examples of how easy prettier-scripts makes things:
+
+#### Check only changed files, and use no semi colons:
+
+```
+$ ./node_modules/.bin/prettier-scripts-check --changed --no-semi
+```
+
+#### Check only changed JavaScript files:
+
+```
+$ ./node_modules/.bin/prettier-scripts-check --changed --filter-changed '**/*.js'
+```
+
+#### Check all targets, and use no semi colons:
+
+```
+$ ./node_modules/.bin/prettier-scripts-check --no-semi --targets 'src/**/*.js'
+```
+
+#### Set `print-width` to `120` and write all files:
+
+```
+$ ./node_modules/.bin/prettier-scripts-write --print-width 120 --targets 'src/**/*.js'
+```
+
+#### Check your entire project in an npm script for use on CI
+
+```
+// package.json
+{
+  "scripts": {
+    "prettier-check-all": "prettier-scripts-check --targets 'src/**/*.js' --no-semi --trailing-comma es5"
+  }
+}
+```
+
 ## Scripts
 
 prettier-scripts provides two executables currently, one to check your code base and one to format files:
@@ -72,39 +111,3 @@ You can set the log level to:
 - warn (default)
 - error
 
-## Examples
-
-#### Check only changed files, and use no semi colons:
-
-```
-$ ./node_modules/.bin/prettier-scripts-check --changed --no-semi
-```
-
-#### Check only changed JavaScript files:
-
-```
-$ ./node_modules/.bin/prettier-scripts-check --changed --filter-changed '**/*.js'
-```
-
-#### Check all targets, and use no semi colons:
-
-```
-$ ./node_modules/.bin/prettier-scripts-check --no-semi --targets 'src/**/*.js'
-```
-
-#### Set `print-width` to `120` and write all files:
-
-```
-$ ./node_modules/.bin/prettier-scripts-write --print-width 120 --targets 'src/**/*.js'
-```
-
-#### Check your entire project in an npm script for use on CI
-
-```
-// package.json
-{
-  "scripts": {
-    "prettier-check-all": "prettier-scripts-check --targets 'src/**/*.js' --no-semi --trailing-comma es5"
-  }
-}
-```
